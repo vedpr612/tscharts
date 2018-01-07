@@ -229,7 +229,7 @@ Allow: GET, POST, PUT, DELETE, HEAD, OPTIONS
 * **Example:**
 
 ```
-PUT /tscharts/v1/clinicstation/30/ HTTP/1.1
+PUT /tscharts/v1/surgeryhistory/30/ HTTP/1.1
 Host: 127.0.0.1:8000
 Content-Length: 33
 Accept-Encoding: gzip, deflate, compress
