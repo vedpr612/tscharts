@@ -21,7 +21,7 @@
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `{"patientid":id,"patientname": string,"surgeryname": string,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]}`
+    **Content:** `{"patientid":id,"surgeryname": string,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]}`
  
 * **Error Response:**
 
@@ -84,7 +84,7 @@ Content-Type: application/json
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `[{"patientid":id,"patientname": string,"surgeryname": string,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]},...]`
+    **Content:** `[{"patientid":id,"surgeryname": string,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]},...]`
  
 * **Error Response:**
 
