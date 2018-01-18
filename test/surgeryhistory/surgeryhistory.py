@@ -370,3 +370,353 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x = DeleteSurgery(host, port, token, surgeryid)
         ret = x.send(timeout=30)
         self.assertEqual(ret[0], 200)
+
+    def testUpdateSurgeryHistory(self):
+        data = {}
+
+        data["paternal_last"] = "abcd1234"
+        data["maternal_last"] = "yyyyyy"
+        data["first"] = "zzzzzzz"
+        data["middle"] = ""
+        data["suffix"] = "Jr."
+        data["prefix"] = ""
+        data["dob"] = "04/01/1962"
+        data["gender"] = "Female"
+        data["street1"] = "1234 First Ave"
+        data["street2"] = ""
+        data["city"] = "Ensenada"
+        data["colonia"] = ""
+        data["state"] = u"Baja California"
+        data["phone1"] = "1-111-111-1111"
+        data["phone2"] = ""
+        data["email"] = "patient@example.com"
+        data["emergencyfullname"] = "Maria Sanchez"
+        data["emergencyphone"] = "1-222-222-2222"
+        data["emergencyemail"] = "maria.sanchez@example.com"
+
+        x = CreatePatient(host, port, token, data)
+        ret = x.send(timeout=30)
+        self.assertEqual(ret[0], 200)
+        patientid = int(ret[1]["id"])
+
+        data = {}
+
+        data["name"] = "Surgery1"
+
+        x = CreateSurgeryType(host, port, token, data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        surgeryid = int(ret[1]["id"])
+
+        x = CreateSurgeryHistory(host, port, token)
+
+        data = {}
+        data["patientid"] = patientid
+        data["surgeryname"] = "Surgery1"
+        data["surgeryyear"] = 1999
+        data["surgerymonth"] = 12
+        data["surgerylocation"] = "Place1"
+        data["anesthesia_problems"] = True
+        data["bleeding_problems"] = True
+
+        x.setSurgeryHistory(data)
+
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        id = int(ret[1]["id"])
+
+        x = GetSurgeryHistory(host, port, token)
+        x.setId(id)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        self.assertTrue("patientid" in ret[1])
+        patientId = int(ret[1]["patientid"])
+        self.assertTrue(patientId == patientid)
+        self.assertTrue("surgeryname" in ret[1])
+        surgery = ret[1]["surgeryname"]
+        self.assertTrue(surgery == "Surgery1") 
+
+        data = {}
+        data["surgeryyear"] = 2000
+        data["surgerymonth"] = 11
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+
+        x = GetSurgeryHistory(host, port, token)
+        x.setId(id)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        self.assertTrue("patientid" in ret[1])
+        patientId = int(ret[1]["patientid"])
+        self.assertTrue(patientid == patientId)
+
+        data = ret[1]
+        self.assertTrue("surgeryname" in data)
+        self.assertTrue("surgeryyear" in data)
+        self.assertTrue("surgerymonth" in data)
+        self.assertTrue("surgerylocation" in data)
+        self.assertTrue("anesthesia_problems" in data)
+        self.assertTrue("bleeding_problems" in data)
+
+        self.assertTrue(data["surgeryname"] == "Surgery1")
+        self.assertTrue(data["surgeryyear"] == 2000)
+        self.assertTrue(data["surgerymonth"] == 11)
+        self.assertTrue(data["surgerylocation"] == "Place1")
+        self.assertTrue(data["anesthesia_problems"] == True)
+        self.assertTrue(data["bleeding_problems"] == True)
+        
+        data = {}
+        data["surgerylocation"] = "Place2"
+        data["anesthesia_problems"] = False
+        data["bleeding_problems"] = False
+
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+
+        x = GetSurgeryHistory(host, port, token)
+        x.setId(id)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        self.assertTrue("patientid" in ret[1])
+        patientId = int(ret[1]["patientid"])
+        self.assertTrue(patientid == patientId)
+
+        data = ret[1]
+        self.assertTrue("surgeryname" in data)
+        self.assertTrue("surgeryyear" in data)
+        self.assertTrue("surgerymonth" in data)
+        self.assertTrue("surgerylocation" in data)
+        self.assertTrue("anesthesia_problems" in data)
+        self.assertTrue("bleeding_problems" in data)
+
+        self.assertTrue(data["surgeryname"] == "Surgery1")
+        self.assertTrue(data["surgeryyear"] == 2000)
+        self.assertTrue(data["surgerymonth"] == 11)
+        self.assertTrue(data["surgerylocation"] == "Place2")
+        self.assertTrue(data["anesthesia_problems"] == False)
+        self.assertTrue(data["bleeding_problems"] == False)
+
+        data = {}
+        data["anesthesia_problems"] = "hello"
+        
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 400)
+
+        data = {}
+        data["surgeryname"] = None
+        
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 400)
+
+        data = {}
+        data["surgeryyear"] = 1900
+      
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 400)
+
+        data = {}
+        data["surgeryyear"] = 2500
+
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 400)
+
+        data = {}
+        data["surgerymonth"] = 24
+
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 400)
+        
+        data = {}
+        data["surgeryname"] = "abc"
+
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 400)
+
+        data = {} #update nothing is fine.
+        x = UpdateSurgeryHistory(host, port, token, id)
+        x.setSurgeryHistory(data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+       
+        x = DeleteSurgeryHistory(host, port, token, id)
+        ret = x.send(timeout=30)
+        self.assertEqual(ret[0], 200)
+        
+        x = DeletePatient(host, port, token, patientid)
+        ret = x.send(timeout=30)
+        self.assertEqual(ret[0], 200)
+        
+        x = DeleteSurgeryType(host, port, token, surgeryid)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+
+    def testGetAllSurgeryHistories(self):
+        data = {}
+
+        data["name"] = "Surgery1"
+
+        x = CreateSurgeryType(host, port, token, data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        surgeryid1 = int(ret[1]["id"])
+
+        data = {}
+
+        data["name"] = "Surgery2"
+
+        x = CreateSurgeryType(host, port, token, data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        surgeryid2 = int(ret[1]["id"])
+
+        data = {}
+
+        data["name"] = "Surgery3"
+
+        x = CreateSurgeryType(host, port, token, data)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        surgeryid3 = int(ret[1]["id"])
+
+        data = {}
+        data["paternal_last"] = "3abcd1234"
+        data["maternal_last"] = "yyyyyy"
+        data["first"] = "zzzzzzz"
+        data["middle"] = ""
+        data["suffix"] = "Jr."
+        data["prefix"] = ""
+        data["dob"] = "04/01/1962"
+        data["gender"] = "Female"
+        data["street1"] = "1234 First Ave"
+        data["street2"] = ""
+        data["city"] = "Ensenada"
+        data["colonia"] = ""
+        data["state"] = u"Baja California"
+        data["phone1"] = "1-111-111-1111"
+        data["phone2"] = ""
+        data["email"] = "patient@example.com"
+        data["emergencyfullname"] = "Maria Sanchez"
+        data["emergencyphone"] = "1-222-222-2222"
+        data["emergencyemail"] = "maria.sanchez@example.com"
+
+        x = CreatePatient(host, port, token, data)
+        ret = x.send(timeout=30)
+        self.assertEqual(ret[0], 200)
+        patientid1 = int(ret[1]["id"])
+
+        data = {}
+        data["paternal_last"] = "1abcd1234"
+        data["maternal_last"] = "yyyyyy"
+        data["first"] = "zzzzzzz"
+        data["middle"] = ""
+        data["suffix"] = "Jr."
+        data["prefix"] = ""
+        data["dob"] = "04/01/1962"
+        data["gender"] = "Female"
+        data["street1"] = "1234 First Ave"
+        data["street2"] = ""
+        data["city"] = "Ensenada"
+        data["colonia"] = ""
+        data["state"] = u"Baja California"
+        data["phone1"] = "1-111-111-1111"
+        data["phone2"] = ""
+        data["email"] = "patient@example.com"
+        data["emergencyfullname"] = "Maria Sanchez"
+        data["emergencyphone"] = "1-222-222-2222"
+        data["emergencyemail"] = "maria.sanchez@example.com"
+
+        x = CreatePatient(host, port, token, data)
+        ret = x.send(timeout=30)
+        self.assertEqual(ret[0], 200)
+        patientid2 = int(ret[1]["id"])
+
+        data = {}
+        data["paternal_last"] = "2abcd1234"
+        data["maternal_last"] = "yyyyyy"
+        data["first"] = "zzzzzzz"
+        data["middle"] = ""
+        data["suffix"] = "Jr."
+        data["prefix"] = ""
+        data["dob"] = "04/01/1962"
+        data["gender"] = "Female"
+        data["street1"] = "1234 First Ave"
+        data["street2"] = ""
+        data["city"] = "Ensenada"
+        data["colonia"] = ""
+        data["state"] = u"Baja California"
+        data["phone1"] = "1-111-111-1111"
+        data["phone2"] = ""
+        data["email"] = "patient@example.com"
+        data["emergencyfullname"] = "Maria Sanchez"
+        data["emergencyphone"] = "1-222-222-2222"
+        data["emergencyemail"] = "maria.sanchez@example.com"
+
+        x = CreatePatient(host, port, token, data)
+        ret = x.send(timeout=30)
+        self.assertEqual(ret[0], 200)
+        patientid3 = int(ret[1]["id"])
+
+        idlist = []
+        data = {}
+        data["patientid"] = patientid1
+        data["surgeryname"] = "Surgery1"
+        data["surgeryyear"] = 1999
+        data["surgerymonth"] = 12
+        data["surgerylocation"] = "Place1"
+        data["anesthesia_problems"] = True
+        data["bleeding_problems"] = True
+
+        x.setSurgeryHistory(data)
+
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        id = int(ret[1]["id"])
+        idlist.append(id)
+
+        data = {}
+        data["patientid"] = patientid1
+        data["surgeryname"] = "Surgery2"
+        data["surgeryyear"] = 1999
+        data["surgerymonth"] = 12
+        data["surgerylocation"] = "Place1"
+        data["anesthesia_problems"] = True
+        data["bleeding_problems"] = True
+
+        x.setSurgeryHistory(data)
+
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        id = int(ret[1]["id"])
+        idlist.append(id)
+
+        data = {}
+        data["patientid"] = patientid1
+        data["surgeryname"] = "Surgery3"
+        data["surgeryyear"] = 1999
+        data["surgerymonth"] = 12
+        data["surgerylocation"] = "Place1"
+        data["anesthesia_problems"] = True
+        data["bleeding_problems"] = True
+
+        x.setSurgeryHistory(data)
+
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        id = int(ret[1]["id"])
+        idlist.append(id)
