@@ -21,7 +21,7 @@
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `{"patientid":id,"surgeryname": string,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]}`
+    **Content:** `{"patient":id,"surgery": id,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]}`
  
 * **Error Response:**
 
@@ -52,7 +52,7 @@ Transfer-Encoding: chunked
 Content-Type: application/json
 
 
-{"patientid":1,"surgeryname":surgery1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}
+{"patient":1,"surgery":1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}
 ```
   
 **Get Multiple Surgery Histories**
@@ -75,7 +75,7 @@ Content-Type: application/json
 
    **Optional:**
  
-   `surgeryname` string<br />
+   `surgery` surgery id<br />
 
 * **Data Params**
 
@@ -84,7 +84,7 @@ Content-Type: application/json
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `[{"patientid":id,"surgeryname": string,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]},...]`
+    **Content:** `[{"patient":id,"surgery": id,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]},...]`
  
 * **Error Response:**
 
@@ -95,7 +95,7 @@ Content-Type: application/json
 * **Example:**
 
 ```
-GET /tscharts/v1/surgeryhistory/?patientid=5 HTTP/1.1
+GET /tscharts/v1/surgeryhistory/?patient=5 HTTP/1.1
 Host: localhost
 Content-Length: 2
 Accept-Encoding: gzip, deflate, compress
@@ -115,7 +115,7 @@ Transfer-Encoding: chunked
 Content-Type: application/json
 
 
-[{"patientid":5,"surgeryname":surgery1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}, {"patientid":5,"surgeryname":surgery2,"surgeryyear":2005,"surgerymonth":5,"surgerylocation":place2,"anesthesia_problems":false,"bleeding_problems":true}]
+[{"patient":5,"surgery":1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}, {"patient":5,"surgery":2,"surgeryyear":2005,"surgerymonth":5,"surgerylocation":place2,"anesthesia_problems":false,"bleeding_problems":true}]
 ```
   
 **Create Surgery History**
@@ -138,8 +138,8 @@ Content-Type: application/json
 
    **Required:**
  
-   `patientid` patient id<br />
-   `surgeryname` string the surgery name<br />
+   `patient` patient id<br />
+   `surgery` surgery id<br />
    `surgeryyear` integer legal year<br />
    `surgerymonth` integer legal month<br />
    `surgerylocation` string the location where the surgery performed<br />
@@ -174,7 +174,7 @@ Content-Type: application/json
 Authorization: Token 53f29e4dfc917c28a0e71f26525307250f1f8101
 
 
-{"patientid":5,"surgeryname":surgery1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}HTTP/1.0 200 OK
+{"patient":5,"surgery":1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}HTTP/1.0 200 OK
 Date: Wed, 26 Apr 2017 05:29:15 GMT
 Server: WSGIServer/0.1 Python/2.7.6
 Vary: Accept
@@ -208,7 +208,7 @@ Allow: GET, POST, PUT, DELETE, HEAD, OPTIONS
 
    One or more of the following is required. 
  
-   `surgeryname` the surgery name string<br />
+   `surgery` the surgery id<br />
    `surgeryyear` legal year<br />
    `surgerymonth` legal month<br />
    `surgerylocation` the location where the surgery performed string<br />
