@@ -41,15 +41,15 @@ class GetSurgeryHistory(serviceAPI):
                 base += "?"
             else:
                 base += "&"
-            base += "patientid={}".format(self._patientid)
+            base += "patient={}".format(self._patientid)
             hasQArgs = True
 
-        if not self._surgeryname == None:
+        if not self._surgeryid == None:
             if not hasQArgs:
                 base += "?"
             else:
                 base += "&"
-            base += "surgeryname={}".format(self._surgeryname)
+            base += "surgery={}".format(self._surgeryid)
             hasQArgs = True
 
         self.setURL(base)
@@ -62,7 +62,7 @@ class GetSurgeryHistory(serviceAPI):
         self.setPort(port)
         self.setToken(token)
         self._patientid = None
-        self._surgeryname = None
+        self._surgeryid = None
         self._id = None
         self.makeURL()
    
@@ -75,7 +75,7 @@ class GetSurgeryHistory(serviceAPI):
         self.makeURL()
 
     def setSurgery(self, surgery):
-        self._surgeryname = surgery
+        self._surgeryid = surgery
         self.makeURL()
 
 class UpdateSurgeryHistory(ServiceAPI):
@@ -90,7 +90,7 @@ class UpdateSurgeryHistory(ServiceAPI):
         self.setPayload(self._payload) #patientid is fixed
         self.setURL("tscharts/v1/surgeryhistory/{}/".format(id))
 
-    def setSurgeryHistory(self, history): #history might include: surgeryname, year, month, location, anesthesia problem(T/F), bleeding problem(T/F).
+    def setSurgeryHistory(self, history): #history might include: surgeryid, year, month, location, anesthesia problem(T/F), bleeding problem(T/F).
         for k, v in history.iteritems():
             self._payload[k] = v
         self.setPayload(self._payload)
@@ -155,8 +155,8 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x = CreateSurgeryHistory(host, port, token)
         
         data = {}
-        data["patientid"] = patientid
-        data["surgeryname"] = "Surgery1"
+        data["patient"] = patientid
+        data["surgery"] = surgeryid
         data["surgeryyear"] = 1999
         data["surgerymonth"] = 12
         data["surgerylocation"] = "Place1"
@@ -173,19 +173,19 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x.setId(id)
         ret = x.send(timeout = 30)
         self.assertEqual(ret[0], 200)
-        self.assertTrue("patientid" in ret[1])
-        patientId = int(ret[1]["patientid"])
+        self.assertTrue("patient" in ret[1])
+        patientId = int(ret[1]["patient"])
         self.assertTrue(patientId == patientid)
  
         data = ret[1]
-        self.assertTrue("surgeryname" in data)
+        self.assertTrue("surgery" in data)
         self.assertTrue("surgeryyear" in data)
         self.assertTrue("surgerymonth" in data)
         self.assertTrue("surgerylocation" in data)
         self.assertTrue("anesthesia_problems" in data)
         self.assertTrue("bleeding_problems" in data)
 
-        self.assertTrue(data["surgeryname"] == "Surgery1")
+        self.assertTrue(data["surgery"] == surgeryid)
         self.assertTrue(data["surgeryyear"] == 1999)
         self.assertTrue(data["surgerymonth"] == 12
         self.assertTrue(data["surgerylocation"] == "Place1")
@@ -194,23 +194,23 @@ class TestTSSurgeryHistory(unittest.TestCase):
 
         x = GetSurgeryHistory(host, port, token)
         x.setPatient(patientid)
-        x.setSurgery("Surgery1")
+        x.setSurgery(surgeryid)
         ret = x.send(timeout = 30)
         self.assertEqual(ret[0], 200)
-        self.assertTrue("surgeryname" in ret[1])
-        self.assertTrue("patientid" in ret[1])
-        patientId = int(ret[1]["patientid"])
+        self.assertTrue("surgery" in ret[1])
+        self.assertTrue("patient" in ret[1])
+        patientId = int(ret[1]["patient"])
         self.assertTrue(patientId == patientid) 
        
         data = ret[1]
-        self.assertTrue("surgeryname" in data)
+        self.assertTrue("surgery" in data)
         self.assertTrue("surgeryyear" in data)
         self.assertTrue("surgerymonth" in data)
         self.assertTrue("surgerylocation" in data)
         self.assertTrue("anesthesia_problems" in data)
         self.assertTrue("bleeding_problems" in data)
 
-        self.assertTrue(data["surgeryname"] == "Surgery1")
+        self.assertTrue(data["surgery"] == surgeryid)
         self.assertTrue(data["surgeryyear"] == 1999)
         self.assertTrue(data["surgerymonth"] == 12
         self.assertTrue(data["surgerylocation"] == "Place1")
@@ -227,8 +227,8 @@ class TestTSSurgeryHistory(unittest.TestCase):
         self.assertEqual(ret[0], 404) 
         
         data = {}
-        data["patientid"] = 9999
-        data["surgeryname"] = "Surgery1"
+        data["patient"] = 9999
+        data["surgery"] = surgeryid
         data["surgeryyear"] = 1999
         data["surgerymonth"] = 12
         data["surgerylocation"] = "Place1"
@@ -242,8 +242,8 @@ class TestTSSurgeryHistory(unittest.TestCase):
         self.assertEqual(ret[0], 400)
         
         data = {}
-        data["patientid"] = patientid
-        data["surgeryname"] = "aaaa"
+        data["patient"] = patientid
+        data["surgery"] = 9999
         data["surgeryyear"] = 1999
         data["surgerymonth"] = 12
         data["surgerylocation"] = "Place1"
@@ -263,8 +263,8 @@ class TestTSSurgeryHistory(unittest.TestCase):
        
         #invalid data boolean argu
         data = {}
-        data["patientid"] = patientid
-        data["surgeryname"] = "Surgery1"
+        data["patient"] = patientid
+        data["surgery"] = surgeryid
         data["surgeryyear"] = 1999
         data["surgerymonth"] = 12
         data["surgerylocation"] = "Place1"
@@ -324,8 +324,8 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x = CreateSurgeryHistory(host, port, token)
 
         data = {}
-        data["patientid"] = patientid
-        data["surgeryname"] = "Surgery1"
+        data["patient"] = patientid
+        data["surgery"] = surgeryid
         data["surgeryyear"] = 1999
         data["surgerymonth"] = 12
         data["surgerylocation"] = "Place1"
@@ -411,8 +411,8 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x = CreateSurgeryHistory(host, port, token)
 
         data = {}
-        data["patientid"] = patientid
-        data["surgeryname"] = "Surgery1"
+        data["patient"] = patientid
+        data["surgery"] = surgeryid
         data["surgeryyear"] = 1999
         data["surgerymonth"] = 12
         data["surgerylocation"] = "Place1"
@@ -429,12 +429,12 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x.setId(id)
         ret = x.send(timeout = 30)
         self.assertEqual(ret[0], 200)
-        self.assertTrue("patientid" in ret[1])
-        patientId = int(ret[1]["patientid"])
+        self.assertTrue("patient" in ret[1])
+        patientId = int(ret[1]["patient"])
         self.assertTrue(patientId == patientid)
-        self.assertTrue("surgeryname" in ret[1])
-        surgery = ret[1]["surgeryname"]
-        self.assertTrue(surgery == "Surgery1") 
+        self.assertTrue("surgery" in ret[1])
+        surgeryId = ret[1]["surgery"]
+        self.assertTrue(surgeryid == surgeryId) 
 
         data = {}
         data["surgeryyear"] = 2000
@@ -448,19 +448,19 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x.setId(id)
         ret = x.send(timeout = 30)
         self.assertEqual(ret[0], 200)
-        self.assertTrue("patientid" in ret[1])
-        patientId = int(ret[1]["patientid"])
+        self.assertTrue("patient" in ret[1])
+        patientId = int(ret[1]["patient"])
         self.assertTrue(patientid == patientId)
 
         data = ret[1]
-        self.assertTrue("surgeryname" in data)
+        self.assertTrue("surgery" in data)
         self.assertTrue("surgeryyear" in data)
         self.assertTrue("surgerymonth" in data)
         self.assertTrue("surgerylocation" in data)
         self.assertTrue("anesthesia_problems" in data)
         self.assertTrue("bleeding_problems" in data)
 
-        self.assertTrue(data["surgeryname"] == "Surgery1")
+        self.assertTrue(data["surgery"] == surgeryid)
         self.assertTrue(data["surgeryyear"] == 2000)
         self.assertTrue(data["surgerymonth"] == 11)
         self.assertTrue(data["surgerylocation"] == "Place1")
@@ -481,19 +481,19 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x.setId(id)
         ret = x.send(timeout = 30)
         self.assertEqual(ret[0], 200)
-        self.assertTrue("patientid" in ret[1])
-        patientId = int(ret[1]["patientid"])
+        self.assertTrue("patient" in ret[1])
+        patientId = int(ret[1]["patient"])
         self.assertTrue(patientid == patientId)
 
         data = ret[1]
-        self.assertTrue("surgeryname" in data)
+        self.assertTrue("surgery" in data)
         self.assertTrue("surgeryyear" in data)
         self.assertTrue("surgerymonth" in data)
         self.assertTrue("surgerylocation" in data)
         self.assertTrue("anesthesia_problems" in data)
         self.assertTrue("bleeding_problems" in data)
 
-        self.assertTrue(data["surgeryname"] == "Surgery1")
+        self.assertTrue(data["surgery"] == surgeryid)
         self.assertTrue(data["surgeryyear"] == 2000)
         self.assertTrue(data["surgerymonth"] == 11)
         self.assertTrue(data["surgerylocation"] == "Place2")
@@ -509,7 +509,7 @@ class TestTSSurgeryHistory(unittest.TestCase):
         self.assertEqual(ret[0], 400)
 
         data = {}
-        data["surgeryname"] = None
+        data["surgery"] = None
         
         x = UpdateSurgeryHistory(host, port, token, id)
         x.setSurgeryHistory(data)
@@ -674,10 +674,10 @@ class TestTSSurgeryHistory(unittest.TestCase):
 
         idlist = []
         data = {}
-        data["patientid"] = patientid1
-        data["surgeryname"] = "Surgery1"
-        data["surgeryyear"] = 1999
-        data["surgerymonth"] = 12
+        data["patient"] = patientid1
+        data["surgery"] = surgeryid1
+        data["surgeryyear"] = 1998
+        data["surgerymonth"] = 11
         data["surgerylocation"] = "Place1"
         data["anesthesia_problems"] = True
         data["bleeding_problems"] = True
@@ -690,11 +690,11 @@ class TestTSSurgeryHistory(unittest.TestCase):
         idlist.append(id)
 
         data = {}
-        data["patientid"] = patientid1
-        data["surgeryname"] = "Surgery2"
+        data["patient"] = patientid1
+        data["surgery"] = surgeryid2
         data["surgeryyear"] = 1999
         data["surgerymonth"] = 12
-        data["surgerylocation"] = "Place1"
+        data["surgerylocation"] = "Place2"
         data["anesthesia_problems"] = True
         data["bleeding_problems"] = True
 
@@ -706,11 +706,11 @@ class TestTSSurgeryHistory(unittest.TestCase):
         idlist.append(id)
 
         data = {}
-        data["patientid"] = patientid1
-        data["surgeryname"] = "Surgery3"
-        data["surgeryyear"] = 1999
-        data["surgerymonth"] = 12
-        data["surgerylocation"] = "Place1"
+        data["patient"] = patientid1
+        data["surgery"] = surgeryid3
+        data["surgeryyear"] = 2003
+        data["surgerymonth"] = 9
+        data["surgerylocation"] = "Place3"
         data["anesthesia_problems"] = True
         data["bleeding_problems"] = True
 
@@ -720,3 +720,119 @@ class TestTSSurgeryHistory(unittest.TestCase):
         self.assertEqual(ret[0], 200)
         id = int(ret[1]["id"])
         idlist.append(id)
+        
+        data = {}
+        data["patient"] = patientid2
+        data["surgery"] = surgeryid1
+        data["surgeryyear"] = 2005
+        data["surgerymonth"] = 10
+        data["surgerylocation"] = "Place4"
+        data["anesthesia_problems"] = True
+        data["bleeding_problems"] = True
+
+        x.setSurgeryHistory(data)
+
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        id = int(ret[1]["id"])
+        idlist.append(id)
+        
+        data = {}
+        data["patient"] = patientid3
+        data["surgery"] = surgeryid1
+        data["surgeryyear"] = 2005
+        data["surgerymonth"] = 9
+        data["surgerylocation"] = "Place5"
+        data["anesthesia_problems"] = True
+        data["bleeding_problems"] = True
+
+        x.setSurgeryHistory(data)
+
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0], 200)
+        id = int(ret[1]["id"])
+        idlist.append(id)
+
+        x = GetSurgeryHistory(host, port,token)
+        x.setPatient(patientid1)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+        rtcs = ret[1]
+        self.assertTrue(len(rtcs) == 3)
+
+        x = GetSurgeryHistory(host, port, token)
+        x.setSurgery(surgeryid1)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+        rtcs = ret[1]
+        self.assertTrue(len(rtcs) == 3)
+
+        for x in idlist:
+            y = DeleteSurgeryHistory(host, port, token, x)
+            ret = y.send(timeout = 30)
+            self.assertEqual(ret[0], 200)
+
+        x = GetSurgeryHistory(host, port, token)
+        x.setSurgery(surgeryid1)
+        ret = x.send(timeout=30)
+        self.assertEqual(ret[0], 404)
+        rtcs = ret[1]
+        self.assertTrue(len(rtcs) == 0)
+
+        x = DeletePatient(host, port, token, patientid1)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+
+        x = DeletePatient(host, port, token, patientid2)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+
+        x = DeletePatient(host, port, token, patientid3)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+
+        x = DeleteSurgery(host, port, token, surgeryid1)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+
+        x = DeleteSurgery(host, port, token, surgeryid2)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+
+        x = DeleteSurgery(host, port, token, surgeryid3)
+        ret = x.send(timeout = 30)
+        self.assertEqual(ret[0],200)
+
+def usage():
+    print("surgeryhistory [-h host] [-p port] [-u username] [-w password]") 
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "h:p:u:w:")
+    except getopt.GetoptError as err:
+        print str(err) 
+        usage()
+        sys.exit(2)
+    global host
+    host = "127.0.0.1"
+    global port
+    port = 8000
+    global username
+    username = None
+    global password
+    password = None
+    for o, a in opts:
+        if o == "-h":
+            host = a
+        elif o == "-p":
+            port = int(a)
+        elif o == "-u":
+            username = a
+        elif o == "-w":
+            password = a
+        else:   
+            assert False, "unhandled option"
+    unittest.main(argv=[sys.argv[0]])
+
+if __name__ == "__main__":
+    main()
