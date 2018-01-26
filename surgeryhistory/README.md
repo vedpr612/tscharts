@@ -21,7 +21,7 @@
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `{"patient":id,"surgery": id,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]}`
+    **Content:** `{"id": id,"patient":id,"surgery": id,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]}`
  
 * **Error Response:**
 
@@ -52,7 +52,7 @@ Transfer-Encoding: chunked
 Content-Type: application/json
 
 
-{"patient":1,"surgery":1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}
+{"id":3,"patient":1,"surgery":1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}
 ```
   
 **Get Multiple Surgery Histories**
@@ -70,13 +70,12 @@ Content-Type: application/json
 *  **URL Params**
 
    **Required:**
- 
+    One or more of the followings are used to filter the result. 
    `patient` patient id<br />
-
-   **Optional:**
- 
    `surgery` surgery id<br />
-
+   
+   If one single object is returned, then it is returned as a JSON object. Otherwise, the result must be represented by a JSON array.
+ 
 * **Data Params**
 
    None
@@ -84,7 +83,7 @@ Content-Type: application/json
 * **Success Response:**
 
   * **Code:** 200 <br />
-    **Content:** `[{"patient":id,"surgery": id,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]},...]`
+    **Content:** `[{"id":id,"patient":id,"surgery": id,"surgeryyear":integer,"surgerymonth":integer,"surgerylocation": string, "anesthesia_problems":[true|false], "bleeding_problems":[true|false]},...]`
  
 * **Error Response:**
 
@@ -115,7 +114,7 @@ Transfer-Encoding: chunked
 Content-Type: application/json
 
 
-[{"patient":5,"surgery":1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}, {"patient":5,"surgery":2,"surgeryyear":2005,"surgerymonth":5,"surgerylocation":place2,"anesthesia_problems":false,"bleeding_problems":true}]
+[{"id":3,"patient":5,"surgery":1,"surgeryyear":1999,"surgerymonth":12,"surgerylocation":place1,"anesthesia_problems":true,"bleeding_problems":false}, {"id":6,"patient":5,"surgery":2,"surgeryyear":2005,"surgerymonth":5,"surgerylocation":place2,"anesthesia_problems":false,"bleeding_problems":true}]
 ```
   
 **Create Surgery History**
