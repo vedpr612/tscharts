@@ -14,7 +14,8 @@ from django.core import serializers
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseServerError, HttpResponseNotFound
 import sys
 import numbers
-import json  
+import json 
+from datatime import * 
 
 class SurgeryHistoryView(APIView):
 
@@ -25,7 +26,7 @@ class SurgeryHistoryView(APIView):
         m = {}
         m["id"] = entry.id
         m["patient"] = entry.patient_id
-        m["surgery"] = entry.surgery_id
+        m["surgery"] = entry.surgery_type_id
         m["surgeryyear"] = entry.surgeryyear
         m["surgerymonth"] = entry.surgerymonth
         m["surgerylocation"] = entry.surgerylocation
@@ -119,4 +120,207 @@ class SurgeryHistoryView(APIView):
                return HttpResponseBadRequest()
            else:
                return Response(ret)
-         
+ 
+    def validatePostArgs(self, data, aPatient):
+        valid = True
+        kwargs = data
+        
+        patient_birth_year = int((aPatient.dob)[-4:])
+        now = datetime.datetime.now()
+        current_year = int(now.year)
+
+        try:
+            val = int(data["surgeryyear"])
+            if val < patient_birth_year or val > current_year:
+                valid = False
+            else:
+                kwargs["surgeryyear"] = val
+            val = int(data["surgerymonth"])
+            if val < 1 or val > 12:
+                valid = False
+            else:
+                kwargs["surgerymonth"] = val
+            val = data["surgerylocation"]
+            if len(val) == 0:
+                valid = False
+            val = data["anesthesia_problems"]
+            if not (val == True or val == False):
+                valid = False
+            val = data["bleeding_problems"]
+            if not (val == True or val == False):
+                valid = False
+        except:
+            valid = False
+        return valid, kwargs
+ 
+    def validatePutArgs(self, data, surgery_history, aPatient):
+        valid = True
+
+        patient_birth_year = int((aPatient.dob)[-4:])
+        now = datetime.datetime.now()
+        current_year = int(now.year)
+
+        try:
+            if "surgery" in data:
+                val = data["surgery"]
+                try:
+                    aSurgery = SurgeryType.objects.get(id = val)
+                except:
+                    valid = False
+                surgery_history.surgery = aSurgery
+
+            if "surgeryyear" in data:
+                val = int(data["surgeryyear"])
+                if val < patient_birth_year or val > current_year:
+                    valid = False
+                else:
+                    surgery_history.surgeryyear = val
+
+            if "surgerymonth" in data:
+                val = int(data["surgerymonth"])
+                if val < 1 or val > 12:
+                    valid = False
+                else:
+                    surgery_history.surgerymonth = val
+
+            if "surgerylocation" in data:
+                val = data["surgerylocation"]
+                if len(val) == 0:
+                    valid = False
+                else:
+                    surgery_history.surgerylocation = val
+
+            if "anesthesia_problems" in data:
+                val = data["anesthesia_problems"]
+                if not (val == True or val == False):
+                    valid = False
+                else:
+                    surgery_history.anesthesia_problems = val
+
+            if "bleeding_problems" in data:
+                val = data["bleeding_problems"]
+                if not (val == True or val == False):
+                    valid = False
+                else:
+                    surgery_history.bleeding_problems = val
+        except:
+            valid = False
+
+        return valid, surgery_history
+                
+                
+
+
+
+
+    def post(self, request, format = None):  
+        badRequest = False
+        implError = False
+        
+        data = json.loads(request.body)
+        try:
+            patientid = int(data["patient"])
+        except:
+            badRequest = True
+
+        try:
+            surgeryid = int(data["surgery"])
+        except:
+            badRequest = True
+
+        if not badRequest:
+            try:
+                aPatient = Patient.objects.get(id = patientid)
+            except:
+                aPatient = None
+
+            try:
+                aSurgery = SurgeryType.objects.get(id = surgeryid)  
+            except:
+                aSurgery = None
+            
+            if not aSurgery or not aPatient:
+                raise NotFound
+
+        if not BadRequest:
+            valid, kwargs = self.validatePostArgs(data, aPatient)
+            if not valid:
+                badRequest = True
+        if not BadRequest:
+        
+            try:
+                kwargs["patient"] = aPatient
+                kwargs["surgery"] = aSurgery
+                surgery_history = SurgeryHistory(**kwargs)
+                if surgery_history:
+                    surgery_history.save()
+                else:
+                    implError = True
+            except Exception as e:
+                implError = True
+                implMsg = sys.exc_info()[0]
+
+        if badRequest:
+            return HttpResponseBadRequest()
+        if implError:
+            return HttpResponseServerError(implMsg) 
+        else:
+            return Response({'id': surgery_history.id})
+
+
+    def put(self, request, surgery_history_id = None, format = None):
+        badRequest = False
+        implError = False
+        notFound = False
+
+        if not surgery_history_id:
+            badRequest = True
+
+        if not badRequest:
+            surgery_history = None
+
+            try:
+                surgery_history = SurgeryHistory.objects.get(id = surgery_history)
+                aPatient = surgery_history.patient
+            except:
+                pass
+
+            if not surgery_history:
+                notFound = True
+            else:
+                try:
+                    data = json.loads(request.body)
+                    valid, surgery_history = self.validatePutArgs(data, surgery_history, aPatient)
+                    if valid:
+                        surgery_history.save()
+                    else:
+                        badRequest = True
+                except:
+                    implError = True
+                    implMsg = sys.exc_info()[0]
+        if badRequest:
+            return HttpResponseBadRequest()
+        if notFound:
+            return HttpResponseNotFound()
+        if implError:
+            return HttpResponseServerError(implMsg) 
+        else:
+            return Response({})
+
+    def delete(self, request, surgery_history_id=None, format=None):
+        surgery_history = None
+
+
+        if not surgery_history_id:
+            return HttpResponseBadRequest()
+        try:
+            surgery_history = SurgeryHistory.objects.get(id=surgery_history_id)
+        except:
+            surgery_history = None
+
+        if not surgery_history:
+            raise NotFound
+        else:
+            surgery_history.delete()
+
+        return Response({})
