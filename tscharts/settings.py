@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'tscharts',
     'medications',
     'surgerytype',
+    'surgeryhistory',
 ]
 
 MIDDLEWARE_CLASSES = [
