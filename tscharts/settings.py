@@ -50,7 +50,6 @@ LOGIN_REDIRECT_URL = '/'  # The page you want users to arrive at after they succ
 LOGIN_URL = '/accounts/login/'  # The page users are directed to if they are not logged in,
                                 # and are trying to access pages requiring authentication
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'registration',
@@ -76,6 +75,7 @@ INSTALLED_APPS = [
     'tscharts',
     'medications',
     'surgerytype',
+    'category',
     'surgeryhistory',
 ]
 

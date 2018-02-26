@@ -5,7 +5,7 @@ from django.db import models
 
 # Create your views here.
 from patient.models import Patient
-from surgerytype.models SurgeryType
+from surgerytype.models import SurgeryType
 
 class SurgeryHistory(models.Model):
     patient = models.ForeignKey(Patient)
