@@ -3,11 +3,13 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 
+
 from rest_framework.views import APIView
 from rest_framework.exceptions import APIException, NotFound
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from surgeryhistory.models import *
 from surgerytype.models import *
 from patient.models import *
 from django.core import serializers
@@ -15,10 +17,10 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequ
 import sys
 import numbers
 import json 
-from datatime import * 
+from datetime import datetime 
+
 
 class SurgeryHistoryView(APIView):
-
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
@@ -26,7 +28,7 @@ class SurgeryHistoryView(APIView):
         m = {}
         m["id"] = entry.id
         m["patient"] = entry.patient_id
-        m["surgery"] = entry.surgery_type_id
+        m["surgery"] = entry.surgery_id
         m["surgeryyear"] = entry.surgeryyear
         m["surgerymonth"] = entry.surgerymonth
         m["surgerylocation"] = entry.surgerylocation
@@ -73,60 +75,59 @@ class SurgeryHistoryView(APIView):
                             kwargs["surgery"] = aSurgery
                     except:
                         badRequest = True
-           except:
-               pass #no surgery ID
-           if not badRequest and len(kwargs):
-               case1 = False
-               case2 = False
-               case3 = False
+            except:
+                pass #no surgery ID
+            if not badRequest and len(kwargs):
+                case1 = False
+                case2 = False
+                case3 = False
 
-               if aPatient and aSurgery:
-                   case1 = True
-               elif aPatient and not aSurgery:
-                   case2 = True
-               elif aSurgery and not aPatient:
-                   case3 = True
-               else:
-                   badRequest = True
+                if aPatient and aSurgery:
+                    case1 = True
+                elif aPatient and not aSurgery:
+                    case2 = True
+                elif aSurgery and not aPatient:
+                    case3 = True
+                else:
+                    badRequest = True
 
           
-           if not badRequest:
-               kwargs = {}
-               if case1:
-                   kwargs["patient"] = aPatient
-                   kwargs["surgery"] = aSurgery
-               if case2:
-                   kwargs["patient"] = aPatient
-               if case3:
-                   kwargs["surgery"] = aSurgery
-               try:
-                   surgery_history = SurgeryHistory.objects.filter(**kwargs)
-               except:
-                   surgery_history = None
-
-           if not surgery_history and not badRequest:
-               raise NotFound
-           elif not badRequest:
-               if surgery_history_id:
-                   ret = self.serialize(surgery_history)
-               elif len(surgery_history) == 1:
-                   ret = self.serialize(surgery_history[0])
-               else:
-                   ret = []
-                   for x in surgery_history:
-                       y = self.serialize(x)
-                       ret.append(y)
-           if badRequest:
-               return HttpResponseBadRequest()
-           else:
-               return Response(ret)
+            if not badRequest:
+                kwargs = {}
+                if case1:
+                    kwargs["patient"] = aPatient
+                    kwargs["surgery"] = aSurgery
+                if case2:
+                    kwargs["patient"] = aPatient
+                if case3:
+                    kwargs["surgery"] = aSurgery
+                try:
+                    surgery_history = SurgeryHistory.objects.filter(**kwargs)
+                except:
+                    surgery_history = None
+        if not surgery_history and not badRequest:
+            raise NotFound
+        elif not badRequest:
+            if surgery_history_id:
+                ret = self.serialize(surgery_history)
+            elif len(surgery_history) == 1:
+                ret = self.serialize(surgery_history[0])
+            else:
+                ret = []
+                for x in surgery_history:
+                    y = self.serialize(x)
+                    ret.append(y)
+        if badRequest:
+            return HttpResponseBadRequest()
+        else:
+            return Response(ret)
  
     def validatePostArgs(self, data, aPatient):
         valid = True
         kwargs = data
         
-        patient_birth_year = int((aPatient.dob)[-4:])
-        now = datetime.datetime.now()
+        patient_birth_year = int(str(aPatient.dob)[0:4])
+        now = datetime.now()
         current_year = int(now.year)
 
         try:
@@ -149,6 +150,11 @@ class SurgeryHistoryView(APIView):
             val = data["bleeding_problems"]
             if not (val == True or val == False):
                 valid = False
+            
+            for key in data:
+                if key not in ["surgery","patient","surgeryyear","surgerymonth","surgerylocation","anesthesia_problems","bleeding_problems"]:
+                    valid = False
+    
         except:
             valid = False
         return valid, kwargs
@@ -156,8 +162,8 @@ class SurgeryHistoryView(APIView):
     def validatePutArgs(self, data, surgery_history, aPatient):
         valid = True
 
-        patient_birth_year = int((aPatient.dob)[-4:])
-        now = datetime.datetime.now()
+        patient_birth_year = int(str(aPatient.dob)[0:4])
+        now = datetime.now()
         current_year = int(now.year)
 
         try:
@@ -203,6 +209,9 @@ class SurgeryHistoryView(APIView):
                     valid = False
                 else:
                     surgery_history.bleeding_problems = val
+            for key in data:
+                if key not in ["surgery", "surgeryyear","surgerymonth","surgerylocation","anesthesia_problems","bleeding_problems"]:
+                    valid = False
         except:
             valid = False
 
@@ -242,11 +251,11 @@ class SurgeryHistoryView(APIView):
             if not aSurgery or not aPatient:
                 raise NotFound
 
-        if not BadRequest:
+        if not badRequest:
             valid, kwargs = self.validatePostArgs(data, aPatient)
             if not valid:
                 badRequest = True
-        if not BadRequest:
+        if not badRequest:
         
             try:
                 kwargs["patient"] = aPatient
@@ -280,7 +289,7 @@ class SurgeryHistoryView(APIView):
             surgery_history = None
 
             try:
-                surgery_history = SurgeryHistory.objects.get(id = surgery_history)
+                surgery_history = SurgeryHistory.objects.get(id = surgery_history_id)
                 aPatient = surgery_history.patient
             except:
                 pass
