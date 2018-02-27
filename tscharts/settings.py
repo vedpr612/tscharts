@@ -76,10 +76,7 @@ INSTALLED_APPS = [
     'medications',
     'surgerytype',
     'category',
-<<<<<<< HEAD
     'surgeryhistory',
-=======
->>>>>>> master
 ]
 
 MIDDLEWARE_CLASSES = [
