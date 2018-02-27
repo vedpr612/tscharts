@@ -13,5 +13,8 @@ truncate statechange_statechange;
 truncate medicalhistory_medicalhistory; 
 truncate category_category;
 truncate image_image;
+<<<<<<< HEAD
 truncate surgerytype_surgerytype;
 truncate surgeryhistory_surgeryhistory;
+=======
+>>>>>>> master
