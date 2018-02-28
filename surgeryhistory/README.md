@@ -88,7 +88,7 @@ Content-Type: application/json
 * **Error Response:**
 
   * **Code:** 400 BAD REQUEST<br />
-  * **Code:** 403 NOT FOUND<br />
+  * **Code:** 404 NOT FOUND<br />
   * **Code:** 500 SERVER ERROR
 
 * **Example:**
@@ -157,8 +157,11 @@ Content-Type: application/json
 * **Error Response:**
 
   * **Code:** 400 BAD REQUEST<br />
-  * **Code:** 403 NOT FOUND<br />
+  * **Code:** 404 NOT FOUND<br />
   * **Code:** 500 SERVER ERROR
+  A BAD REQUEST ERROR can occur if the data paramter value is not valid. For example, surgeryyear and surgerymonth is not legal. It can also occur if the parameter name is not valid. The paramter names that are valid are "patient","surgery","surgeryyear","surgerymonth","surgerylocation","anethesia_problems" and "bleeding_problems".
+
+  A NOT FOUND ERROR can occur if the patient id or surgery id cannot be found in the database.
 
 * **Example:**
 
@@ -222,8 +225,11 @@ Allow: GET, POST, PUT, DELETE, HEAD, OPTIONS
 * **Error Response:**
   
   * **Code:** 400 BAD REQUEST<br />
-  * **Code:** 400 BAD REQUEST<br />
+  * **Code:** 404 NOT FOUND<br />
   * **Code:** 500 SERVER ERROR
+  A BAD REQUEST ERROR can occur if the data paramter if not valid. For example, surgeryyear and surgerymonth to update is not legal, or the surgery to update cannot be found in the database. It can also occur if the parameter name is not valid. The paramter names that are valid are "surgery","surgeryyear","surgerymonth","surgerylocation","anethesia_problems" and "bleeding_problems". "patient" cannot be updated here.
+
+  A NOT FOUND ERROR can occur if the surgeryHistoryId cannot be found.
 
 * **Example:**
 
