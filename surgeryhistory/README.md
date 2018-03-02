@@ -162,7 +162,7 @@ Content-Type: application/json
   * **Code:** 500 SERVER ERROR
 
 
-  A BAD REQUEST ERROR can occur if the data parameter value is not valid. For example, surgeryyear and surgerymonth is not legal. It can also occur if the parameter name is not valid. The parameter names that are valid are "patient","surgery","surgeryyear","surgerymonth","surgerylocation","anethesia_problems" and "bleeding_problems".
+  A BAD REQUEST ERROR can occur if the data parameter value is not valid. For example, give a surgeryyear that is greater than the current year, or give a surgerymonth that is greater than 12. It can also occur if the parameter name is not valid. The parameter names that are valid are "patient","surgery","surgeryyear","surgerymonth","surgerylocation","anethesia_problems" and "bleeding_problems".
 
   A NOT FOUND ERROR can occur if the patient id or surgery id cannot be found in the database.
 
@@ -232,7 +232,7 @@ Allow: GET, POST, PUT, DELETE, HEAD, OPTIONS
   * **Code:** 500 SERVER ERROR
   
 
-  A BAD REQUEST ERROR can occur if the data parameter if not valid. For example, surgeryyear and surgerymonth to update is not legal, or the surgery to update cannot be found in the database. It can also occur if the parameter name is not valid. The parameter names that are valid are "surgery","surgeryyear","surgerymonth","surgerylocation","anethesia_problems" and "bleeding_problems". "patient" cannot be updated here.
+  A BAD REQUEST ERROR can occur if the data parameter if not valid. For example, surgeryyear and surgerymonth to update are not legal, or the surgery to update cannot be found in the database. It can also occur if the parameter name is not valid. The parameter names that are valid are "surgery","surgeryyear","surgerymonth","surgerylocation","anethesia_problems" and "bleeding_problems". "patient" cannot be updated here.
 
   A NOT FOUND ERROR can occur if the id  cannot be found.
 
