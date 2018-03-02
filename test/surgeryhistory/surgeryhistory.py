@@ -197,12 +197,12 @@ class TestTSSurgeryHistory(unittest.TestCase):
         x.setSurgery(surgeryid)
         ret = x.send(timeout = 30)
         self.assertEqual(ret[0], 200)
-        self.assertTrue("surgery" in ret[1])
-        self.assertTrue("patient" in ret[1])
-        patientId = int(ret[1]["patient"])
+        self.assertTrue("surgery" in ret[1][0])
+        self.assertTrue("patient" in ret[1][0])
+        patientId = int(ret[1][0]["patient"])
         self.assertTrue(patientId == patientid) 
        
-        data = ret[1]
+        data = ret[1][0]
         self.assertTrue("surgery" in data)
         self.assertTrue("surgeryyear" in data)
         self.assertTrue("surgerymonth" in data)

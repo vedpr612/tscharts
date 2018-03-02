@@ -110,8 +110,6 @@ class SurgeryHistoryView(APIView):
         elif not badRequest:
             if surgery_history_id:
                 ret = self.serialize(surgery_history)
-            elif len(surgery_history) == 1:
-                ret = self.serialize(surgery_history[0])
             else:
                 ret = []
                 for x in surgery_history:
@@ -218,10 +216,6 @@ class SurgeryHistoryView(APIView):
         return valid, surgery_history
                 
                 
-
-
-
-
     def post(self, request, format = None):  
         badRequest = False
         implError = False
